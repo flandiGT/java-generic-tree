@@ -1,7 +1,9 @@
 package de.flandigt.java.generictree;
 
+import com.nitorcreations.junit.runners.NestedRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,6 +14,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
 
+@RunWith(NestedRunner.class)
 public class TreeTest {
 
     private Tree<String, Integer> tree;
@@ -21,70 +24,130 @@ public class TreeTest {
         tree = new Tree<>();
     }
 
-    @Test
-    public void shouldGetNullIfNotPresent() throws Exception {
-        TestTreeKey key = new TestTreeKey("key");
+    public class EmptyTree {
 
-        assertThat(tree.search(key), is(nullValue()));
-        assertThat(tree.size(), is(equalTo(0)));
+        @Test
+        public void sizeShouldBeZero() throws Exception {
+            assertThat(tree.size(), is(equalTo(0)));
+        }
 
-        assertThat(tree.iterator().hasNext(), is(false));
+        @Test
+        public void iteratorShouldNotHaveNext() throws Exception {
+            assertThat(tree.iterator().hasNext(), is(false));
+        }
+
+        @Test
+        public void searchingUnknownKeyShouldReturnNull() throws Exception {
+            TestTreeKey key = new TestTreeKey("key");
+            assertThat(tree.search(key), is(nullValue()));
+        }
     }
 
-    @Test
-    public void shouldGetRootValue() throws Exception {
-        TestTreeKey key = new TestTreeKey("key");
-        int value = 123;
+    public class TreeWithFirstLevelElement {
 
-        tree.put(key, value);
+        private TestTreeKey key;
+        private int value;
 
-        assertThat(tree.search(key), is(equalTo(value)));
-        assertThat(tree.size(), is(equalTo(1)));
+        @Before
+        public void setup() throws Exception {
+            key = new TestTreeKey("key");
+            value = 123;
 
-        Iterator<Integer> iterator = tree.iterator();
-        assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.next(), is(equalTo(value)));
-        assertThat(iterator.hasNext(), is(false));
+            tree.put(key, value);
+        }
+
+        @Test
+        public void searchingRightKeyShouldGetValue() throws Exception {
+            assertThat(tree.search(key), is(equalTo(value)));
+        }
+
+        @Test
+        public void sizeShouldBeOne() throws Exception {
+            assertThat(tree.size(), is(equalTo(1)));
+        }
+
+        @Test
+        public void iteratorShouldProvideOnlyOneElement() throws Exception {
+            Iterator<Integer> iterator = tree.iterator();
+
+            assertThat(iterator.hasNext(), is(true));
+            assertThat(iterator.next(), is(equalTo(value)));
+            assertThat(iterator.hasNext(), is(false));
+        }
     }
 
-    @Test
-    public void shouldGetSecondLevelValue() throws Exception {
-        TestTreeKey key = new TestTreeKey("key/value1");
-        int value = 123;
+    public class TreeWithSecondLevelElement {
 
-        tree.put(key, value);
+        private TestTreeKey key;
+        private int value;
 
-        assertThat(tree.search(key), is(equalTo(value)));
-        assertThat(tree.size(), is(equalTo(1)));
+        @Before
+        public void setup() throws Exception {
+            key = new TestTreeKey("key/value");
+            value = 5432;
 
-        Iterator<Integer> iterator = tree.iterator();
-        assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.next(), is(equalTo(value)));
-        assertThat(iterator.hasNext(), is(false));
+            tree.put(key, value);
+        }
+
+        @Test
+        public void searchingRightKeyShouldGetValue() throws Exception {
+            assertThat(tree.search(key), is(equalTo(value)));
+        }
+
+        @Test
+        public void sizeShouldBeOne() throws Exception {
+            assertThat(tree.size(), is(equalTo(1)));
+        }
+
+        @Test
+        public void iteratorShouldProvideOnlyOneElement() throws Exception {
+            Iterator<Integer> iterator = tree.iterator();
+
+            assertThat(iterator.hasNext(), is(true));
+            assertThat(iterator.next(), is(equalTo(value)));
+            assertThat(iterator.hasNext(), is(false));
+        }
+
+        public class TreeWithSecondElementOnSecondLevel {
+
+            private TestTreeKey secondKey;
+            private int secondValue;
+
+            @Before
+            public void setup() throws Exception {
+                secondKey = new TestTreeKey("key/value2");
+                secondValue = 5432;
+
+                tree.put(secondKey, secondValue);
+            }
+
+            @Test
+            public void searchingFirstKeyShouldGetValue() throws Exception {
+                assertThat(tree.search(key), is(equalTo(value)));
+            }
+
+            @Test
+            public void searchingSecondKeyShouldGetValue() throws Exception {
+                assertThat(tree.search(secondKey), is(equalTo(secondValue)));
+            }
+
+            @Test
+            public void sizeShouldBeOne() throws Exception {
+                assertThat(tree.size(), is(equalTo(2)));
+            }
+
+            @Test
+            public void iteratorShouldProvideOnlyOneElement() throws Exception {
+                Iterator<Integer> iterator = tree.iterator();
+
+                assertThat(iterator.hasNext(), is(true));
+                assertThat(iterator.next(), is(equalTo(secondValue)));
+                assertThat(iterator.hasNext(), is(true));
+                assertThat(iterator.next(), is(equalTo(value)));
+                assertThat(iterator.hasNext(), is(false));
+            }
+        }
     }
-
-    @Test
-    public void shouldGetSecondLevelSecondValue() throws Exception {
-        TestTreeKey key = new TestTreeKey("key/value1");
-        int value = 123;
-        TestTreeKey key2 = new TestTreeKey("key/value2");
-        int value2 = 5323;
-
-        tree.put(key, value);
-        tree.put(key2, value2);
-
-        assertThat(tree.search(key), is(equalTo(value)));
-        assertThat(tree.search(key2), is(equalTo(value2)));
-        assertThat(tree.size(), is(equalTo(2)));
-
-        Iterator<Integer> iterator = tree.iterator();
-        assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.next(), is(equalTo(value2)));
-        assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.next(), is(equalTo(value)));
-        assertThat(iterator.hasNext(), is(false));
-    }
-
 
     private static class TestTreeKey implements TreeKey<String> {
 
