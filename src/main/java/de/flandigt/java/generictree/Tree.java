@@ -31,7 +31,9 @@ public class Tree<K, V> implements Iterable<V> {
 
     @Override
     public void forEach(Consumer<? super V> action) {
-
+        for(V value : this) {
+            action.accept(value);
+        }
     }
 
     @Override
