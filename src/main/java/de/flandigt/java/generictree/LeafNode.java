@@ -31,7 +31,7 @@ class LeafNode<K, V> implements Node<K, V> {
     }
 
     @Override
-    public void remove(List<K> keys) {
+    public V remove(List<K> keys) {
         throw new RuntimeException("Cannot remove on LeafNode");
     }
 

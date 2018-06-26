@@ -45,16 +45,24 @@ class BranchNode<K, V> implements Node<K, V> {
     }
 
     @Override
-    public void remove(List<K> keys) {
-        if(keys.size() == 1) {
-            K key = keys.get(0);
-            children.remove(key);
-        } else {
-            K key = keys.get(0);
-            List<K> subKeyList = keys.subList(1, keys.size() - 1);
+    public V remove(List<K> keys) {
+        V removedValue;
+        K key = keys.get(0);
 
-            children.get(key).remove(subKeyList);
+        if(keys.size() == 1) {
+            removedValue = children.remove(key).getValue();
+        } else {
+            List<K> subKeyList = keys.subList(1, keys.size());
+
+            Node<K, V> childNode = children.get(key);
+            removedValue = childNode.remove(subKeyList);
+
+            if(childNode.size() < 1) {
+                children.remove(key);
+            }
         }
+
+        return removedValue;
     }
 
     @Override

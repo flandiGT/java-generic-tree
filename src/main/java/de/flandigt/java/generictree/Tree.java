@@ -16,8 +16,8 @@ public class Tree<K, V> implements Iterable<V> {
         return root.search(treeKey.toKeys());
     }
 
-    public void remove(TreeKey<K> treeKey) {
-        root.remove(treeKey.toKeys());
+    public V remove(TreeKey<K> treeKey) {
+        return root.remove(treeKey.toKeys());
     }
 
     public int size() {

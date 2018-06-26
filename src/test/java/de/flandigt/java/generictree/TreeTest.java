@@ -74,6 +74,31 @@ public class TreeTest {
             assertThat(iterator.next(), is(equalTo(value)));
             assertThat(iterator.hasNext(), is(false));
         }
+
+        public class WhenRemoveItem {
+
+            Integer removedValue;
+
+            @Before
+            public void setup() throws Exception {
+                removedValue = tree.remove(key);
+            }
+
+            @Test
+            public void removedValueShouldEqualValue() throws Exception {
+                assertThat(removedValue, is(equalTo(value)));
+            }
+
+            @Test
+            public void sizeShouldBeZero() throws Exception {
+                assertThat(tree.size(), is(equalTo(0)));
+            }
+
+            @Test
+            public void iteratorShouldNotHaveNext() throws Exception {
+                assertThat(tree.iterator().hasNext(), is(false));
+            }
+        }
     }
 
     public class TreeWithSecondLevelElement {
@@ -106,6 +131,31 @@ public class TreeTest {
             assertThat(iterator.hasNext(), is(true));
             assertThat(iterator.next(), is(equalTo(value)));
             assertThat(iterator.hasNext(), is(false));
+        }
+
+        public class AfterRemoveItem {
+
+            Integer removedValue;
+
+            @Before
+            public void setup() throws Exception {
+                removedValue = tree.remove(key);
+            }
+
+            @Test
+            public void removedValueShouldEqualValue() throws Exception {
+                assertThat(removedValue, is(equalTo(value)));
+            }
+
+            @Test
+            public void sizeShouldBeZero() throws Exception {
+                assertThat(tree.size(), is(equalTo(0)));
+            }
+
+            @Test
+            public void iteratorShouldNotHaveNext() throws Exception {
+                assertThat(tree.iterator().hasNext(), is(false));
+            }
         }
 
         public class TreeWithSecondElementOnSecondLevel {
@@ -145,6 +195,35 @@ public class TreeTest {
                 assertThat(iterator.hasNext(), is(true));
                 assertThat(iterator.next(), is(equalTo(value)));
                 assertThat(iterator.hasNext(), is(false));
+            }
+
+            public class AfterRemoveFirstItem {
+
+                Integer removedValue;
+
+                @Before
+                public void setup() throws Exception {
+                    removedValue = tree.remove(key);
+                }
+
+                @Test
+                public void removedValueShouldEqualValue() throws Exception {
+                    assertThat(removedValue, is(equalTo(value)));
+                }
+
+                @Test
+                public void sizeShouldBeOne() throws Exception {
+                    assertThat(tree.size(), is(equalTo(1)));
+                }
+
+                @Test
+                public void iteratorShouldProvideOnlyOneElement() throws Exception {
+                    Iterator<Integer> iterator = tree.iterator();
+
+                    assertThat(iterator.hasNext(), is(true));
+                    assertThat(iterator.next(), is(equalTo(value)));
+                    assertThat(iterator.hasNext(), is(false));
+                }
             }
         }
     }
